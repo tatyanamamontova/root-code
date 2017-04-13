@@ -11,6 +11,7 @@
 #include <TROOT.h>
 #include <TChain.h>
 #include <TFile.h>
+#include <TProfile.h>
 
 // Header file for the classes stored in the TTree if any.
 
@@ -20,9 +21,35 @@ class cbmsim_reduced_tree {
 public :
    TTree          *fChain;   //!pointer to the analyzed TTree or TChain
    Int_t           fCurrent; //!current Tree number in a TChain
-   TH1F           *h_pt_mc; //! histo for monte-carlo
-   TH1F           *h_pt_mpd; //! histo for mpd
-   TH1F           *h_compare; //! histo for comparing
+//! Histogramms for tranverse momentum
+   TH1F           *h_pt_mc_p; //! histo for monte-carlo for proton
+   TH1F           *h_pt_mpd_p; //! histo for mpd for proton
+   TH1F           *h_eff_p; //! histo for efficiency for proton
+   TH1F           *h_pt_mc_k; //! histo for monte-carlo for kaon
+   TH1F           *h_pt_mpd_k; //! histo for mpd for kaon
+   TH1F           *h_eff_k; //! histo for efficiency for kaon
+   TH1F           *h_pt_mc_pi; //! histo for monte-carlo for pion
+   TH1F           *h_pt_mpd_pi; //! histo for mpd for pion
+   TH1F           *h_eff_pi; //! histo for efficiency for pion
+//! Histogramms for pseudorapidity
+   TH1F           *h_eta_mc_p; //! histo for monte-carlo for proton
+   TH1F           *h_eta_mpd_p; //! histo for mpd for proton
+   TH1F           *h_eta_eff_p; //! histo for efficiency for proton
+   TH1F           *h_eta_mc_k; //! histo for monte-carlo for kaon
+   TH1F           *h_eta_mpd_k; //! histo for mpd for kaon
+   TH1F           *h_eta_eff_k; //! histo for efficiency for kaon
+   TH1F           *h_eta_mc_pi; //! histo for monte-carlo for pion
+   TH1F           *h_eta_mpd_pi; //! histo for mpd for pion
+   TH1F           *h_eta_eff_pi; //! histo for efficiency for pion
+//! Histo for correlation tranverse mometum
+   TH2F           *h_corr_pt_p; //! for proton
+   TH2F           *h_corr_pt_k; //! for kaon
+   TH2F           *h_corr_pt_pi; //! for pion
+//! Profile histo
+   TProfile	  *h_prof_p;//! for proton
+   TProfile       *h_prof_k;//! for kaon
+   TProfile       *h_prof_pi;//! for pion 
+  
    // Declaration of leaf types
    Float_t         b_mc;
    Float_t         phiEP_mc;
@@ -152,9 +179,36 @@ cbmsim_reduced_tree::cbmsim_reduced_tree(TTree *tree) : fChain(0)
 
    }
    Init(tree);
-   h_pt_mpd = new TH1F("h_pt_mpd","transverse_momentum_mpd",100,0.0,4.0);
-   h_pt_mc = new TH1F("h_pt_mc","transverse_momentum_mc",100,0.0,4.0);
-   h_compare = new TH1F("h_compare", "divided_tranverse_momentum", 100, 0.0, 4.0);
+
+   h_pt_mpd_p = new TH1F("h_pt_mpd_p","transverse momentum mpd for proton",100,0.0,4.0);
+   h_pt_mc_p = new TH1F("h_pt_mc_p","transverse momentum mc for proton",100,0.0,4.0);
+   h_eff_p = new TH1F("h_eff_p", "transverse momentum efficiency for proton", 100, 0.0, 4.0);
+   h_pt_mpd_k = new TH1F("h_pt_mpd_k","transverse momentum mpd for kaon",100,0.0,4.0);
+   h_pt_mc_k = new TH1F("h_pt_mc_k","transverse momentum mc for kaon",100,0.0,4.0);
+   h_eff_k = new TH1F("h_eff_k", "transverse momentum efficiency for kaon", 100, 0.0, 4.0);
+   h_pt_mpd_pi = new TH1F("h_pt_mpd_pi","transverse momentum mpd for pion",100,0.0,4.0);
+   h_pt_mc_pi = new TH1F("h_pt_mc_pi","transverse momentum mc for pion",100,0.0,4.0);
+   h_eff_pi = new TH1F("h_eff_pi", "transverse momentum efficiency for pion", 100, 0.0, 4.0);
+
+   h_eta_mpd_p = new TH1F("h_eta_mpd_p","pseudorapidity mpd for proton",100,0.0,4.0);
+   h_eta_mc_p = new TH1F("h_eta_mc_p","pseudorapidity mc for proton",100,0.0,4.0);
+   h_eta_eff_p = new TH1F("h_eta_eff_p", "pseudorapidity efficiency for proton", 100, 0.0, 4.0);
+   h_eta_mpd_k = new TH1F("h_eta_mpd_k","pseudorapidity mpd for kaon",100,0.0,4.0);
+   h_eta_mc_k = new TH1F("h_eta_mc_k","pseudorapidity mc for kaon",100,0.0,4.0);
+   h_eta_eff_k = new TH1F("h_eta_eff_k", "pseudorapidity efficiency for kaon", 100, 0.0, 4.0);
+   h_eta_mpd_pi = new TH1F("h_eta_mpd_pi","pseudorapidity mpd for pion",100,0.0,4.0);
+   h_eta_mc_pi = new TH1F("h_eta_mc_pi","pseudorapidity mc for pion",100,0.0,4.0);
+   h_eta_eff_pi = new TH1F("h_eta_eff_pi", "pseudorapidity efficiency for pion", 100, 0.0, 4.0);
+
+   h_corr_pt_p = new TH2F("h_corr_pt_p", "correlation for tranverse momentum for proton", 100, 0.0, 4.0, 100, 0.0, 0.5);
+   h_corr_pt_k = new TH2F("h_corr_pt_k", "correlation for tranverse momentum for kaon", 100, 0.0, 4.0, 100, 0.0, 0.5);
+   h_corr_pt_pi = new TH2F("h_corr_pt_pi", "correlation for tranverse momentum for pion", 100, 0.0, 4.0, 100, 0.0, 0.5);	
+
+   h_prof_p = new TProfile("h_prof_p","profile for correlation for proton", 100, 0.0, 4.0, 0.0, 0.5);
+   h_prof_k = new TProfile("h_prof_k","profile for correlation for kaon", 100, 0.0, 4.0, 0.0, 0.5);
+   h_prof_pi = new TProfile("h_prof_pi","profile for correlation for pion", 100, 0.0, 4.0, 0.0, 0.5);
+
+
 }
 
 cbmsim_reduced_tree::~cbmsim_reduced_tree()
